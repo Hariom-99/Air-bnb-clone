@@ -1,0 +1,14 @@
+<% layout('/layouts/boilerplate.ejs') -%>
+<body>
+    <h1><%=hotel_data.title%></h1>
+    <div>
+        <p><%=hotel_data.description%></p>
+        <h2>₹<%=hotel_data.price%></h2>
+        <br>
+        <hr>
+        <h3>Location: <%=hotel_data.location%> ,<%=hotel_data.country%></h3>
+        
+    </div>
+    <a href="/index/<%=hotel_data._id%>/edit">edit</a>
+    <form method="post" action="/index/<%=hotel_data._id%>?_method=DELETE"><button>Delete</button></form>
+</body>
