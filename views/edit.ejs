@@ -1,17 +1,46 @@
 <% layout('/layouts/boilerplate.ejs') -%>
+
 <body>
-     <form  method="post" action="/index/<%=data._id%>?_method=PUT">
-        <input type="text" name="title" value="<%=data.title%>">
-        <br><br>
-        <input type="text" name="image" value="<%=data.image%>"> 
-        <textarea name="description" value="<%=data.description%>"></textarea>
-                <br><br>
-        <input type="number" value="<%=data.price%>" name="price">
-                <br><br>
-        <input type="text" value="<%=data.location%>" name="location">
-                <br><br>
-        <input type="text" value="<%=data.country%>" name="country">
-                <br><br>
-        <button>edit</button>
-    </form>
+    <div class="container mt-5">
+        <h2 class="mb-4">Edit Listing</h2>
+        <form method="POST" action="/index/<%= data._id %>?_method=PUT" novalidate class="needs-validation">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" name="title" id="title" value="<%= data.title %>" class="form-control" required><div class="valid-feedback">Title looks good</div>
+                <div class="invalid-feedback">title must be valid</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="image" class="form-label">Image URL</label>
+                <input type="text" name="image" id="image" value="<%= data.image %>" class="form-control" required>
+                <div class="invalid-feedback">image should be valid</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea name="description" id="description" class="form-control" required><%= data.description %></textarea>
+                <div class="invalid-feedback">description should be valid</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="number" name="price" id="price" value="<%= data.price %>" class="form-control" required>
+                <div class="invalid-feedback">price should be valid</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input type="text" name="location" id="location" value="<%= data.location %>" class="form-control" required>
+                <div class="invalid-feedback">location should be valid</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="country" class="form-label">Country</label>
+                <input type="text" name="country" id="country" value="<%= data.country %>" class="form-control" required>
+                <div class="invalid-feedback">country name should be valid</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary update-btn">Update</button>
+        </form>
+    </div>
 </body>
