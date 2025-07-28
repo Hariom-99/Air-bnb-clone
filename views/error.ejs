@@ -1,0 +1,14 @@
+<% layout('/layouts/boilerplate.ejs') -%>
+
+<div class="container d-flex flex-column align-items-center justify-content-center min-vh-100 text-center">
+    <img 
+        src="https://png.pngtree.com/recommend-works/png-clipart/20241108/ourmid/pngtree-unfinished---artwork-png-image_14309998.png" 
+        alt="Error occurred" 
+        class="img-fluid w-25 mb-4"
+    >
+
+    <div class="alert alert-danger w-75" role="alert">
+        <strong>Error:</strong> <%= err.message %>
+    </div>
+
+</div>

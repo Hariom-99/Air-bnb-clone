@@ -1,4 +1,4 @@
-.body{
+body{
     font-family: "Plus Jakarta Sans", sans-serif;
     display: flex;
     flex-direction: column;
@@ -111,3 +111,7 @@ footer > div {
      background-color: rgb(255, 66, 66) !important;
     border-color: white !important;
 }
+/* .error_img{
+ height: 20%;
+ width: 50%;
+} */

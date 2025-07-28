@@ -7,6 +7,8 @@ const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate")
 const wrapAsync=require("./util/wrapAsync.js");
 const ExpressError=require("./util/ExpressError.js")
+const listingSchema=require("./listingSchema.js");
+
 
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine","ejs");
@@ -39,6 +41,15 @@ app.get("/",(req,res)=>{
 // list1.save().then((res)=>{
 //     console.log(list1);
 // })
+const validatelisting=(req,res,next)=>{
+    let {error}=listingSchema.validate(req.body);
+    console.log(error);
+    if(error){
+        throw new ExpressError(400,error.message);
+    }
+}
+
+
 
 app.get("/index",wrapAsync(async(req,res)=>{
     const alllisting=await List.find({});
@@ -50,7 +61,11 @@ app.get("/index",wrapAsync(async(req,res)=>{
 app.get("/index/new",(req,res)=>{
     res.render("new_hotel_form.ejs");
 })
-app.post("/index",wrapAsync(async(req,res,next)=>{
+app.post("/index",validatelisting,wrapAsync(async(req,res,next)=>{
+    // if(!req.body){
+    //     throw new ExpressError(400,"Send valid body");
+    // }
+    
     let new_entry=req.body;
     let new_hotel=new List(new_entry);
     await new_hotel.save();
@@ -67,7 +82,7 @@ app.get("/index/:id/edit",wrapAsync(async(req,res)=>{
     console.log(data);
 }));
 
-app.put("/index/:id",wrapAsync(async(req,res)=>{
+app.put("/index/:id",validatelisting,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     await List.findByIdAndUpdate(id,{...req.body});
     res.redirect("/index");
@@ -90,7 +105,7 @@ app.get("/index/:id",wrapAsync(async(req,res)=>{
 }));
 
 
-app.all("/*catchAll", (req, res, next) => {
+app.all("/*catchAll", (req, res, next) => {                // ye jo routes above define nahi hai .and wrong route call krne par error trigger krta hai
     next(new ExpressError(404, "Page Not Found!"));
 });
 // app.all("*", (req, res, next) => {
@@ -100,7 +115,7 @@ app.all("/*catchAll", (req, res, next) => {
 
 app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong!" } = err;
-    res.status(statusCode).send(message);
+    res.render("error.ejs",{err});
 });
 
 
