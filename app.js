@@ -8,6 +8,7 @@ const ejsMate=require("ejs-mate")
 const wrapAsync=require("./util/wrapAsync.js");
 const ExpressError=require("./util/ExpressError.js")
 const listingSchema=require("./listingSchema.js");
+const Review=require("./models/review_model.js");
 
 
 app.set("views",path.join(__dirname,"views"));
@@ -96,6 +97,7 @@ app.delete("/index/:id",wrapAsync(async(req,res)=>{
 }));
 
 
+//hotel data to show details 
 
 
 app.get("/index/:id",wrapAsync(async(req,res)=>{
@@ -103,6 +105,19 @@ app.get("/index/:id",wrapAsync(async(req,res)=>{
     const hotel_data= await  List.findById(id);
     res.render("hotel.ejs",{hotel_data});
 }));
+
+//reviews post request 
+app.post("/index/:id/review",async(req,res)=>{
+    let hotel=await List.findById(req.params.id);
+    let newreview=new Review(req.body.review) ;
+    hotel.reviews.push(newreview);
+    await newreview.save();
+    await hotel.save();
+
+    console.log("new review saved");
+    res.redirect(`/index/${req.params.id}`)
+    //res.send("Review given successfully");
+})
 
 
 app.all("/*catchAll", (req, res, next) => {                // ye jo routes above define nahi hai .and wrong route call krne par error trigger krta hai

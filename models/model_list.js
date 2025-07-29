@@ -1,6 +1,5 @@
 const mongoose=require("mongoose");
-
-
+const Schema = mongoose.Schema;
 
 const listingSchema=new mongoose.Schema({
     title:{type:String},
@@ -10,7 +9,11 @@ const listingSchema=new mongoose.Schema({
 set:(v)=>v===""?"https://plus.unsplash.com/premium_photo-1687960116497-0dc41e1808a2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGhvdGVsfGVufDB8fDB8fHww":v},// this is when client gives the empty string in the image secton 
     price:{type:Number},
     location:{type:String},
-    country:{type:String}
+    country:{type:String},
+    reviews:[{
+        type:Schema.Types.ObjectId,
+        ref:"Review"
+    },],
 })
 
 const List=mongoose.model("list",listingSchema);
