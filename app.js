@@ -7,13 +7,15 @@ const methodOverride=require("method-override");
 const ejsMate=require("ejs-mate")
 const wrapAsync=require("./util/wrapAsync.js");
 const ExpressError=require("./util/ExpressError.js")
-const listingSchema=require("./listingSchema.js");
+const {listingSchema,reviewSchema}=require("./listingSchema.js");
 const Review=require("./models/review_model.js");
 
 
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine","ejs");
 app.use(express.urlencoded({extended:true}));
+//app.use(express.urlencoded({ extended: true }));
+
 app.use(methodOverride("_method")); 
 app.engine("ejs",ejsMate);
 app.use(express.static(path.join(__dirname,"/public")))
@@ -42,13 +44,31 @@ app.get("/",(req,res)=>{
 // list1.save().then((res)=>{
 //     console.log(list1);
 // })
-const validatelisting=(req,res,next)=>{
+const validatelisting=(req,res,next)=>{                     // joi backend validationg for new hotel
     let {error}=listingSchema.validate(req.body);
     console.log(error);
     if(error){
         throw new ExpressError(400,error.message);
+        
     }
+    next();
 }
+// const validatereview=(req,res,next)=>{                     // joi backend validationg for review
+//     let {error}=reviewSchema.validate(req.body);
+//     console.log(error);
+//     if(error){
+//         throw new ExpressError(400,error.message);
+        
+//     }
+// }
+const validatereview = (req, res, next) => {
+    let { error } = reviewSchema.validate(req.body);
+    //  console.log(error);
+    if (error) {
+        throw new ExpressError(400, error.message);
+    }
+    next();
+};
 
 
 
@@ -62,6 +82,7 @@ app.get("/index",wrapAsync(async(req,res)=>{
 app.get("/index/new",(req,res)=>{
     res.render("new_hotel_form.ejs");
 })
+//joi validation  for adding new entities 
 app.post("/index",validatelisting,wrapAsync(async(req,res,next)=>{
     // if(!req.body){
     //     throw new ExpressError(400,"Send valid body");
@@ -102,12 +123,12 @@ app.delete("/index/:id",wrapAsync(async(req,res)=>{
 
 app.get("/index/:id",wrapAsync(async(req,res)=>{
     const {id}=req.params;
-    const hotel_data= await  List.findById(id);
+    const hotel_data= await  List.findById(id).populate("reviews");
     res.render("hotel.ejs",{hotel_data});
 }));
 
 //reviews post request 
-app.post("/index/:id/review",async(req,res)=>{
+app.post("/index/:id/review",validatereview,wrapAsync(async(req,res)=>{
     let hotel=await List.findById(req.params.id);
     let newreview=new Review(req.body.review) ;
     hotel.reviews.push(newreview);
@@ -117,7 +138,27 @@ app.post("/index/:id/review",async(req,res)=>{
     console.log("new review saved");
     res.redirect(`/index/${req.params.id}`)
     //res.send("Review given successfully");
-})
+}));
+
+
+//delete the review 
+
+app.delete("/index/:id/reviews/:reviewid",wrapAsync(async(req,res)=>{
+    let {id,reviewid}=req.params;
+    let deleted=await Review.findByIdAndDelete(reviewid);
+    await List.findByIdAndUpdate(id,{$pull:{reviews:reviewid}});
+    console.log(deleted);
+
+
+
+    res.redirect(`/index/${id}`);
+}));
+
+
+
+
+
+
 
 
 app.all("/*catchAll", (req, res, next) => {                // ye jo routes above define nahi hai .and wrong route call krne par error trigger krta hai
