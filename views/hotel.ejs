@@ -69,9 +69,10 @@
                       <%=rev.rating%> Stars
                     </p>
 
-                    <form action="/index/<%= hotel_data._id %>/reviews/<%= rev._id %>?_method=DELETE" method="post">
+                    <form action="/index/<%= hotel_data._id %>/review/<%= rev._id %>?_method=DELETE" method="post">
                       <button class="btn btn-dark">Delete</button>
                     </form>
+                    
 
                   </div>
                 </div>

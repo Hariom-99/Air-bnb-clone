@@ -9,7 +9,8 @@ const wrapAsync=require("./util/wrapAsync.js");
 const ExpressError=require("./util/ExpressError.js")
 const {listingSchema,reviewSchema}=require("./listingSchema.js");
 const Review=require("./models/review_model.js");
-
+const index=require("./routes/index.js");
+const review=require("./routes/reviews.js");
 
 app.set("views",path.join(__dirname,"views"));
 app.set("view engine","ejs");
@@ -72,87 +73,12 @@ const validatereview = (req, res, next) => {
 
 
 
-app.get("/index",wrapAsync(async(req,res)=>{
-    const alllisting=await List.find({});
-    res.render("index.ejs",{alllisting});
-}));
 
-// showing route 
-
-app.get("/index/new",(req,res)=>{
-    res.render("new_hotel_form.ejs");
-})
-//joi validation  for adding new entities 
-app.post("/index",validatelisting,wrapAsync(async(req,res,next)=>{
-    // if(!req.body){
-    //     throw new ExpressError(400,"Send valid body");
-    // }
-    
-    let new_entry=req.body;
-    let new_hotel=new List(new_entry);
-    await new_hotel.save();
-    console.log(new_entry);
-    res.redirect("/index");
-}));
+// showing route index route 
+app.use("/index",index);
+app.use("/index/:id/review",review);
 
 // edit route 
-
-app.get("/index/:id/edit",wrapAsync(async(req,res)=>{
-    let {id}=req.params;
-    let data=await List.findById(id)
-    res.render("edit.ejs",{data});
-    console.log(data);
-}));
-
-app.put("/index/:id",validatelisting,wrapAsync(async(req,res)=>{
-    let {id}=req.params;
-    await List.findByIdAndUpdate(id,{...req.body});
-    res.redirect("/index");
-}));
-
-app.delete("/index/:id",wrapAsync(async(req,res)=>{
-    let {id}=req.params;
-    let deleted=await List.findByIdAndDelete(id);
-    console.log(deleted);
-    res.redirect("/index");
-}));
-
-
-//hotel data to show details 
-
-
-app.get("/index/:id",wrapAsync(async(req,res)=>{
-    const {id}=req.params;
-    const hotel_data= await  List.findById(id).populate("reviews");
-    res.render("hotel.ejs",{hotel_data});
-}));
-
-//reviews post request 
-app.post("/index/:id/review",validatereview,wrapAsync(async(req,res)=>{
-    let hotel=await List.findById(req.params.id);
-    let newreview=new Review(req.body.review) ;
-    hotel.reviews.push(newreview);
-    await newreview.save();
-    await hotel.save();
-
-    console.log("new review saved");
-    res.redirect(`/index/${req.params.id}`)
-    //res.send("Review given successfully");
-}));
-
-
-//delete the review 
-
-app.delete("/index/:id/reviews/:reviewid",wrapAsync(async(req,res)=>{
-    let {id,reviewid}=req.params;
-    let deleted=await Review.findByIdAndDelete(reviewid);
-    await List.findByIdAndUpdate(id,{$pull:{reviews:reviewid}});
-    console.log(deleted);
-
-
-
-    res.redirect(`/index/${id}`);
-}));
 
 
 

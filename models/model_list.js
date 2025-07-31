@@ -1,6 +1,6 @@
 const mongoose=require("mongoose");
 const Schema = mongoose.Schema;
-
+const Review=require("./review_model.js")
 const listingSchema=new mongoose.Schema({
     title:{type:String},
     description:{type:String},
@@ -15,6 +15,10 @@ set:(v)=>v===""?"https://plus.unsplash.com/premium_photo-1687960116497-0dc41e180
         ref:"Review"
     },],
 })
-
+listingSchema.post("findOneAndDelete",async(List)=>{
+    if(List){
+        await Review.deleteMany({_id:{$in:List.reviews}});
+    }
+})
 const List=mongoose.model("list",listingSchema);
 module.exports=List;
