@@ -15,8 +15,11 @@ router.post("/signup",async(req,res)=>{
     const newUser = new User({ email: new_entry.email, username: new_entry.username });
     const registeredUser = await User.register(newUser, new_entry.password);
     console.log(registeredUser);
+    req.login(registeredUser, function(err) {
+    if (err) { return next(err); }
     req.flash("success","Welcome to ait bnb !");
-    res.redirect("/index");    
+    res.redirect("/index"); 
+    });   
     }
     catch(e){
         req.flash("error",e.message);
@@ -33,5 +36,15 @@ router.post('/login',
     res.redirect('/index');
   });
 
+
+router.get("/logout",(req,res,next)=>{
+ req.logout((err)=>{ if(err){
+    next(err);
+  }
+  req.flash("success","you have been successfully logged out");
+  res.redirect("/index");
+  })
+
+})
 
 module.exports=router;

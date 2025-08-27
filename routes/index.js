@@ -6,6 +6,7 @@ const List=require("../models/model_list.js");
 const ExpressError=require("../util/ExpressError.js")
 const {listingSchema,reviewSchema}=require("../listingSchema.js");
 //const Review=require("../models/review_model.js");
+const isLoggedin=require("../isLoggedin.js");
 
 
 
@@ -27,7 +28,8 @@ router.get("/",wrapAsync(async(req,res)=>{
 }));
 
 //new hotel ading form
-router.get("/new",(req,res)=>{
+router.get("/new",isLoggedin,(req,res)=>{
+    
     res.render("new_hotel_form.ejs");
 })
 //joi validation  for adding new entities 
@@ -46,7 +48,7 @@ router.post("/",validatelisting,wrapAsync(async(req,res,next)=>{
 
 
 //hotel detail edit
-router.get("/:id/edit",wrapAsync(async(req,res)=>{
+router.get("/:id/edit",isLoggedin,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     let data=await List.findById(id)
     res.render("edit.ejs",{data});
@@ -64,7 +66,7 @@ router.put("/:id",validatelisting,wrapAsync(async(req,res)=>{
 
 // delete the hotel details 
 
-router.delete("/:id",wrapAsync(async(req,res)=>{
+router.delete("/:id",isLoggedin,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     let deleted=await List.findByIdAndDelete(id);
     console.log(deleted);
