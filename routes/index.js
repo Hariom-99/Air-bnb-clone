@@ -6,7 +6,7 @@ const List=require("../models/model_list.js");
 const ExpressError=require("../util/ExpressError.js")
 const {listingSchema,reviewSchema}=require("../listingSchema.js");
 //const Review=require("../models/review_model.js");
-const isLoggedin=require("../isLoggedin.js");
+const {isLoggedin,isOwner}=require("../middleware.js");
 
 
 
@@ -49,7 +49,7 @@ router.post("/",validatelisting,wrapAsync(async(req,res,next)=>{
 
 
 //hotel detail edit
-router.get("/:id/edit",isLoggedin,wrapAsync(async(req,res)=>{
+router.get("/:id/edit",isLoggedin,isOwner,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     let data=await List.findById(id)
     res.render("edit.ejs",{data});
@@ -57,7 +57,7 @@ router.get("/:id/edit",isLoggedin,wrapAsync(async(req,res)=>{
 }));
 
 //edited detail deployed
-router.put("/:id",validatelisting,wrapAsync(async(req,res)=>{
+router.put("/:id" ,isLoggedin, wrapAsync(isOwner), validatelisting,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     await List.findByIdAndUpdate(id,{...req.body});
      req.flash("success","The listing was edited successfully");
@@ -67,7 +67,7 @@ router.put("/:id",validatelisting,wrapAsync(async(req,res)=>{
 
 // delete the hotel details 
 
-router.delete("/:id",isLoggedin,wrapAsync(async(req,res)=>{
+router.delete("/:id",isLoggedin,isOwner,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     let deleted=await List.findByIdAndDelete(id);
     console.log(deleted);

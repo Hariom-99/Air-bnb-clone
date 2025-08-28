@@ -22,13 +22,15 @@
               </h2>
               <h4 class="text-muted">Location: <%= hotel_data.location %>, <%= hotel_data.country %>
               </h4>
-
-              <div class="d-flex justify-content-around mt-4">
-                <a href="/index/<%= hotel_data._id %>/edit" class="btn btn-primary edit-btn">Edit</a>
-                <form method="POST" action="/index/<%= hotel_data._id %>?_method=DELETE">
-                  <button type="submit" class="btn btn-dark">Delete</button>
-                </form>
-              </div>
+<!-- to show the delete and endit  button to the owner only -->
+              <%if(currUser && currUser._id.equals(hotel_data.owner._id)){ %>
+                <div class="d-flex justify-content-around mt-4">
+                  <a href="/index/<%= hotel_data._id %>/edit" class="btn btn-primary edit-btn">Edit</a>
+                  <form method="POST" action="/index/<%= hotel_data._id %>?_method=DELETE">
+                    <button type="submit" class="btn btn-dark">Delete</button>
+                  </form>
+                </div>
+                <%}%>
             </div>
           </div>
         </div>

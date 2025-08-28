@@ -3,7 +3,7 @@ const User=require("../models/user.js");
 const router = express.Router();
 const passport=require("passport");
 const flash = require('flash');
-const {saveRedirectUrl}=require("../isLoggedin.js");
+const {saveRedirectUrl}=require("../middleware.js");
 
 
 router.get("/signup",(req,res)=>{
