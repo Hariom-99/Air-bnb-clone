@@ -14,6 +14,11 @@ set:(v)=>v===""?"https://plus.unsplash.com/premium_photo-1687960116497-0dc41e180
         type:Schema.Types.ObjectId,
         ref:"Review"
     },],
+    owner:{
+        type:Schema.Types.ObjectId,
+        ref: "User",
+    },
+
 })
 listingSchema.post("findOneAndDelete",async(List)=>{
     if(List){

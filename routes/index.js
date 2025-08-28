@@ -40,6 +40,7 @@ router.post("/",validatelisting,wrapAsync(async(req,res,next)=>{
     
     let new_entry=req.body;
     let new_hotel=new List(new_entry);
+    new_hotel.owner=req.user._id;
     await new_hotel.save();
     req.flash("success","The new listing was created successfully");
     console.log(new_entry);
@@ -80,11 +81,12 @@ router.delete("/:id",isLoggedin,wrapAsync(async(req,res)=>{
 
 router.get("/:id",wrapAsync(async(req,res)=>{
     const {id}=req.params;
-    const hotel_data= await  List.findById(id).populate("reviews");
+    const hotel_data= await  List.findById(id).populate("reviews").populate("owner");
     if(!hotel_data){
         req.flash("error","Hotel you are looking does not exist");
          return res.redirect("/index");
     }
+    console.log(hotel_data);
     res.render("hotel.ejs",{hotel_data});
 }));
 
