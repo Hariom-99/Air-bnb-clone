@@ -3,6 +3,7 @@ const User=require("../models/user.js");
 const router = express.Router();
 const passport=require("passport");
 const flash = require('flash');
+const {saveRedirectUrl}=require("../isLoggedin.js");
 
 
 router.get("/signup",(req,res)=>{
@@ -30,10 +31,12 @@ router.get("/login",(req,res)=>{
     res.render("loginform.ejs");
 })
 router.post('/login', 
+  saveRedirectUrl,
   passport.authenticate('local', { failureRedirect: '/login',failureFlash:true }),
   async (req, res)=>{
     req.flash("success","Welcome back to airbnb !");
-    res.redirect('/index');
+    let redirectUrl=res.locals.redirectUrl||"/index";
+    res.redirect(redirectUrl);
   });
 
 
