@@ -5,20 +5,16 @@ const Review=require("../models/review_model.js");
 const {reviewSchema}=require("../listingSchema.js");
 const List=require("../models/model_list.js");
 const ExpressError=require("../util/ExpressError.js")
+const { validatereview, isLoggedin ,isreviewauthor} = require("../middleware.js");
 
-const validatereview = (req, res, next) => {
-    let { error } = reviewSchema.validate(req.body);
-    //  console.log(error);
-    if (error) {
-        throw new ExpressError(400, error.message);
-    }
-    next();
-};
+
 
 //reviews post request 
-router.post("/",validatereview,wrapAsync(async(req,res)=>{
+router.post("/",isLoggedin,validatereview,wrapAsync(async(req,res)=>{
     let hotel=await List.findById(req.params.id);
     let newreview=new Review(req.body.review) ;
+    newreview.author=req.user._id;
+    console.log(newreview);
     hotel.reviews.push(newreview);
     await newreview.save();
     await hotel.save();
@@ -32,7 +28,7 @@ router.post("/",validatereview,wrapAsync(async(req,res)=>{
 
 //delete the review 
 
-router.delete("/:reviewid",wrapAsync(async(req,res)=>{
+router.delete("/:reviewid",isLoggedin,isreviewauthor,wrapAsync(async(req,res)=>{
     let {id,reviewid}=req.params;
     console.log(id,reviewid);
     console.log("DELETE route hit", id, reviewid); 

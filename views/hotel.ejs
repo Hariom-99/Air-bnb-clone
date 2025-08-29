@@ -36,6 +36,7 @@
         </div>
 
         <div class="col-md-6 mb-4">
+          <% if(currUser){%>
           <div class="card p-4">
             <h4 class="text-center mb-3">Leave Rating</h4>
             <form action="/index/<%= hotel_data._id %>/review" method="post" novalidate class=" needs-validation">
@@ -54,36 +55,33 @@
               </div>
             </form>
             <hr>
+            <% } %>
             <p><b>ALL reivews </b></p>
             <div class="row">
+  <% for (rev of hotel_data.reviews) { %>
+    <div class="review-card col-md-5 mb-4 ms-2">
+      <div class="card h-100 shadow-sm d-flex flex-column">
+        <div class="card-header">
+          <%= rev.author.username%>
+        </div>
+        <div class="card-body flex-grow-1 d-flex flex-column">
+          <!-- Scrollable review content -->
+          <div class="review-content flex-grow-1 overflow-auto mb-3 p-2 border rounded">
+            <p class="mb-2"><%= rev.comment %></p>
+            <p><%= rev.rating %> Stars</p>
+          </div>
 
-              <%for(rev of hotel_data.reviews){%>
+          <!-- Delete button at bottom -->
+          <form action="/index/<%= hotel_data._id %>/review/<%= rev._id %>?_method=DELETE" method="post" class="mt-auto">
+            <button class="btn btn-dark w-100">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</div>
 
-                <div class="review-card col-md-5 mb-4 ms-2">
-                  <div class="card-header">
-                    john doe
-                  </div>
-                  <div class="card-body">
 
-
-                    <p>
-                      <%=rev.comment%>
-                    </p>
-
-                    <p>
-                      <%=rev.rating%> Stars
-                    </p>
-
-                    <form action="/index/<%= hotel_data._id %>/review/<%= rev._id %>?_method=DELETE" method="post">
-                      <button class="btn btn-dark">Delete</button>
-                    </form>
-                    
-
-                  </div>
-                </div>
-                <%}%>
-
-            </div>
 
           </div>
         </div>

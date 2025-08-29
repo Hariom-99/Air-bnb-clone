@@ -81,7 +81,7 @@ router.delete("/:id",isLoggedin,isOwner,wrapAsync(async(req,res)=>{
 
 router.get("/:id",wrapAsync(async(req,res)=>{
     const {id}=req.params;
-    const hotel_data= await  List.findById(id).populate("reviews").populate("owner");
+    const hotel_data= await  List.findById(id).populate({path:"reviews",populate:{path:"author",},}).populate("owner");
     if(!hotel_data){
         req.flash("error","Hotel you are looking does not exist");
          return res.redirect("/index");
