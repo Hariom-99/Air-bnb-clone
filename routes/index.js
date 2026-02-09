@@ -7,6 +7,9 @@ const ExpressError=require("../util/ExpressError.js")
 const {listingSchema,reviewSchema}=require("../listingSchema.js");
 //const Review=require("../models/review_model.js");
 const {isLoggedin,isOwner}=require("../middleware.js");
+const multer  = require('multer')
+const {storage}=require("../cloudConfig.js");
+const upload = multer({ storage })
 
 
 
@@ -30,7 +33,10 @@ router.get("/new",isLoggedin,(req,res)=>{
     res.render("new_hotel_form.ejs");
 })
 //joi validation  for adding new entities 
-router.post("/",validatelisting,wrapAsync(listingcontroller.add_new_hotel));
+// router.post("/",validatelisting,wrapAsync(listingcontroller.add_new_hotel));    //temporary commented the post route for the image upload 
+router.post("/", upload.single('listing[image]'),(req,res)=>{
+    res.send(req.file);
+});
 
 
 //hotel detail edit
