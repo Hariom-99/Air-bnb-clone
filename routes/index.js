@@ -7,9 +7,17 @@ const ExpressError=require("../util/ExpressError.js")
 const {listingSchema,reviewSchema}=require("../listingSchema.js");
 //const Review=require("../models/review_model.js");
 const {isLoggedin,isOwner}=require("../middleware.js");
-const multer  = require('multer')
-const {storage}=require("../cloudConfig.js");
-const upload = multer({ storage })
+const multer  = require("multer");
+const {cloudinary,storage}=require("../cloudConfig.js");
+
+// testing purpose can remove the below code ---
+
+console.log("Cloudinary object:", typeof cloudinary);
+console.log("Uploader exists:", typeof cloudinary.uploader);
+console.log("Storage exists:", typeof storage);
+
+//------
+const upload = multer({ storage });
 
 
 
@@ -34,7 +42,7 @@ router.get("/new",isLoggedin,(req,res)=>{
 })
 //joi validation  for adding new entities 
 // router.post("/",validatelisting,wrapAsync(listingcontroller.add_new_hotel));    //temporary commented the post route for the image upload 
-router.post("/", upload.single('listing[image]'),(req,res)=>{
+router.post("/", upload.single("image"),(req,res)=>{
     res.send(req.file);
 });
 
