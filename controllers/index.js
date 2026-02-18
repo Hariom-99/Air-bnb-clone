@@ -1,22 +1,58 @@
 const List=require("../models/model_list.js");
+const cloudinary = require("../cloudConfig");
+const fs = require("fs");
 
 module.exports.index=async(req,res)=>{
     const alllisting=await List.find({});
     res.render("index.ejs",{alllisting});
 }
-module.exports.add_new_hotel=async(req,res,next)=>{
-    // if(!req.body){
-    //     throw new ExpressError(400,"Send valid body");
-    // }
+
+//For changing the manual version of the cloudinary upload 
+
+// module.exports.add_new_hotel=async(req,res,next)=>{
+//     // if(!req.body){
+//     //     throw new ExpressError(400,"Send valid body");
+//     // }
     
-    let new_entry=req.body;
-    let new_hotel=new List(new_entry);
-    new_hotel.owner=req.user._id;
-    await new_hotel.save();
-    req.flash("success","The new listing was created successfully");
-    console.log(new_entry);
-    res.redirect("/index");
-}
+//     let new_entry=req.body;
+//     let new_hotel=new List(new_entry);
+//     new_hotel.owner=req.user._id;
+//     await new_hotel.save();
+//     req.flash("success","The new listing was created successfully");
+//     console.log(new_entry);
+//     res.redirect("/index");
+// }
+
+module.exports.add_new_hotel = async (req, res, next) => {
+    try {
+        let new_hotel = new List(req.body);
+        new_hotel.owner = req.user._id;
+
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: "airbnb_clone"
+            });
+
+            new_hotel.image = {
+                url: result.secure_url,
+                filename: result.public_id
+            };
+
+            // delete temp file
+            fs.unlinkSync(req.file.path);
+        }
+
+        await new_hotel.save();
+
+        req.flash("success", "The new listing was created successfully");
+        res.redirect("/index");
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+
 module.exports.edit_hotel=async(req,res)=>{
     let {id}=req.params;
     let data=await List.findById(id)

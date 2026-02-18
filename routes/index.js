@@ -7,17 +7,20 @@ const ExpressError=require("../util/ExpressError.js")
 const {listingSchema,reviewSchema}=require("../listingSchema.js");
 //const Review=require("../models/review_model.js");
 const {isLoggedin,isOwner}=require("../middleware.js");
-const multer  = require("multer");
-const {cloudinary,storage}=require("../cloudConfig.js");
+
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
+//const {cloudinary,storage}=require("../cloudConfig.js");
+// const upload = multer({ storage });
 
 // testing purpose can remove the below code ---
 
-console.log("Cloudinary object:", typeof cloudinary);
-console.log("Uploader exists:", typeof cloudinary.uploader);
-console.log("Storage exists:", typeof storage);
+// console.log("Cloudinary object:", typeof cloudinary);
+// console.log("Uploader exists:", typeof cloudinary.uploader);
+// console.log("Storage exists:", typeof storage);
 
 //------
-const upload = multer({ storage });
 
 
 
@@ -40,12 +43,18 @@ router.get("/new",isLoggedin,(req,res)=>{
     
     res.render("new_hotel_form.ejs");
 })
-//joi validation  for adding new entities 
-// router.post("/",validatelisting,wrapAsync(listingcontroller.add_new_hotel));    //temporary commented the post route for the image upload 
-router.post("/", upload.single("image"),(req,res)=>{
-    res.send(req.file);
-});
+// //joi validation  for adding new entities 
+// // router.post("/",validatelisting,wrapAsync(listingcontroller.add_new_hotel));    //temporary commented the post route for the image upload 
+// router.post("/", upload.single("image"),(req,res)=>{
+//     res.send(req.file);
+// });
 
+router.post(
+  "/",
+  isLoggedin,
+  upload.single("image"),
+  wrapAsync(listingcontroller.add_new_hotel)
+);
 
 //hotel detail edit
 router.get("/:id/edit",isLoggedin,isOwner,wrapAsync(listingcontroller.edit_hotel));
